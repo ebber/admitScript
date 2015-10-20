@@ -5,7 +5,7 @@ import json;
 from io import BytesIO
 
 class gitUser:
-	gHandle='ebber';
+	gHandle='';
 	#lists
 	repos=None; #list of the users repos, stored in a list - check github api for docs
 	orgs = None
@@ -14,6 +14,9 @@ class gitUser:
 
 	def __init__(self, gHandle=""):
 		self.gHandle=gHandle;
+
+	def getHandle(self):
+		return self.gHandle
 
 	#returns a list of all repos user owns, options are member, owner and all, 2nd param is force update
 	def getRepos(self, typeOfRepo="all", force=False):
@@ -54,7 +57,3 @@ class gitUser:
 		for x in self.getRepos("owner"):
 			self.stargazers+=x['stargazers_count']
 		return self.stargazers
-
-
-g = gitUser('ebber')
-print g.getStars()

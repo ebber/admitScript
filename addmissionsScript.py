@@ -42,6 +42,6 @@ class student:
 			factorList.append(x)
 		return factorList
 
-s = student(2019,'ebber')
+s = student(2019,'ebber','UIUC')
 s.printScore()
 print s.getFactors()

@@ -91,7 +91,7 @@ class repo:
 
 		buffer = BytesIO()
 		c = pycurl.Curl()
-		#c.setopt(pycurl.USERPWD,"ebber:"+self.OAuth)
+		c.setopt(pycurl.USERPWD,"ebber:"+self.OAuth)
 		c.setopt(c.URL, request)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()

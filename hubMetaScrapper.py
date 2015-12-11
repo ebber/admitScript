@@ -9,7 +9,7 @@ from io import BytesIO
 
 class repo:
 
-	OAuth="c8cc4f0f4c88a7525102659bd61328d4420c8729"
+	OAuth=""
 
 	owner=""
 	contributors=[] #stores tuple of [owner,% of stars they get]
@@ -91,7 +91,7 @@ class repo:
 
 		buffer = BytesIO()
 		c = pycurl.Curl()
-		c.setopt(pycurl.USERPWD,"ebber:"+self.OAuth)
+		#c.setopt(pycurl.USERPWD,"ebber:"+self.OAuth)
 		c.setopt(c.URL, request)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()

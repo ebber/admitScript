@@ -5,13 +5,11 @@ import pycurl
 import json
 from io import BytesIO
 
-#OAuth token: 5d268301033d2cca2ddaf31b3b505493f362fb7e
-
 
 
 class repo:
 
-	OAuth="5d268301033d2cca2ddaf31b3b505493f362fb7e"
+	OAuth="add your own"
 
 	owner=""
 	contributors=[] #stores tuple of [owner,% of stars they get]

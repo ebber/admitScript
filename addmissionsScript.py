@@ -7,33 +7,58 @@ class student:
 	gitHandle=""
 	gradYear=2016
 	university="" #TODO: Add this factor
+	git=None;
+	#vars we gotta make
 
-	factor = {}  #github repos, github stars, github orgs
-	factorWeight={'gitRepos':1,'gitStars':1, 'gitOrgs':1} 
+	factor = {}  #name:[func, value, weighting]
 
 	def __init__(self, gradYear, gitHandle, university):
 		self.gitHandle = gitHandle
 		self.gradYear = gradYear
 		self.university = university
 
-		self.fillGitFactors(self.gitHandle)
+		self.fillGit(gitHandle)
+
+		self.factor['gitRepos']=[self.getGitRepos,0]
+		self.factor['gitStars']=[self.getGStars,0]
+
+		self.updateFactors()
 
 
-	def fillGitFactors(self, gitHandle): #github repos, github stars, github orgs
-		git = gitUser(gitHandle)
-		self.factor['gitRepos'] = len(git.getRepos()) 
-		self.factor['gitStars'] = git.getStars()
-		self.factor['gitOrgs'] = len(git.getOrgs())
 
-	def printScore(self):
-		score = 0
+		self.fillGit(self.gitHandle)
+
+	def addFactor(name, quantifier, weighting, value=0):
+		self.factor[name]=[quantifier,value,weighting]
+
+
+
+	def fillGit(self, gitHandle): #github repos, github stars, github orgs
+		self.git = gitUser(gitHandle)
+
+	def getGitRepos(self):
+ 
+	def getGStars(self):
+		return self.git.getStars()
+
+	def getGOrgs(self):
+		return len(self.git.getOrgs())
+
+
+	def updateFactors(self):
 		for x in self.factor:
-			score+= self.factor[x]*self.factorWeight[x]
-		print score
+			self.factor[x][1] = self.factor[x][0]()
 
-	def updateFactorWeight(self, factor, newWeight=1):
-		self.factorWeight[factor]=newWeight
-		return self.factorWeight[factor]
+
+	def printScore(self, weights):
+		print self.returnScore(weights)
+
+	#weights is a dict of name:weight
+	def returnScore(self, weights):
+		score=0
+		for x in weights:
+			score+=self.factor[x[0]][1]*x[1]
+		return score
 
 	#that have been filled
 	def getFactors(self):
@@ -43,5 +68,8 @@ class student:
 		return factorList
 
 s = student(2019,'ebber','UIUC')
-s.printScore()
-print s.getFactors()
+l=[]
+for fact in s.getFactors():
+	l.append([fact,1])
+s.printScore(l)
+#print s.getFactors()

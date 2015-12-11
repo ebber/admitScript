@@ -22,41 +22,12 @@ class repo:
 		self.owner=owner
 		self.repo=repo
 
-	#uses pyculr to call API and returns response as a JSON dict
-	def callAPI(request):
-		buffer = BytesIO()
-		c = pycurl.Curl()
-		c.setopt(c.USERAGENT,"ebber")
-		c.setopt(c.URL, request)
-		c.setopt(c.WRITEDATA, buffer)
-		c.perform()
-		c.close()
 
-		body = buffer.getvalue()
-			# Body is a byte string.
-			# We have to know the encoding in order to print it to a text file
-			# such as standard output.
-		return json.loads(body.decode('iso-8859-1'))
-
-
-	def fillContributers(self):
-		buffer = BytesIO()
-		c = pycurl.Curl()
-		c.setopt(c.USERAGENT,"ebber")
-		c.setopt(c.URL, 'https://api.github.com/repos/'+self.owner+'/'+self.repo+'/contributors')
-		c.setopt(c.WRITEDATA, buffer)
-		c.perform()
-		c.close()
-
-		body = buffer.getvalue()
-			# Body is a byte string.
-			# We have to know the encoding in order to print it to a text file
-			# such as standard output.
-		response= json.loads(body.decode('iso-8859-1'))
-		if len(response) is not 0:
-			for i in range(0, len(response)):
-				self.contributors.append([response[i]['login'],1.0])
-				#print self.contributors[i]
+	def fillContributers(self):	
+		response= self.callAPI('https://api.github.com/repos/'+self.owner+'/'+self.repo+'/contributors')
+		for i in range(0, len(response)):
+			self.contributors.append([response[i]['login'],1.0])
+			#print self.contributors[i]
 
 
 	#make this porportional to commits
@@ -71,18 +42,7 @@ class repo:
 			#print self.contributors[i]
 
 	def getStargazers(self):
-		buffer = BytesIO()
-		c = pycurl.Curl()
-		c.setopt(c.URL, 'https://api.github.com/repos/'+self.owner+'/'+self.repo+'/stargazers')
-		c.setopt(c.WRITEDATA, buffer)
-		c.perform()
-		c.close()
-
-		body = buffer.getvalue()
-			# Body is a byte string.
-			# We have to know the encoding in order to print it to a text file
-			# such as standard output.
-		response= json.loads(body.decode('iso-8859-1'))
+		response = self.callAPI('https://api.github.com/repos/'+self.owner+'/'+self.repo+'/stargazers')
 		for i in range(0, len(response)):
 			self.stargazers.append(response[i]['login'])
 			#print self.stargazers[i]
@@ -109,9 +69,19 @@ class repo:
 			self.addUserRepo(r,gazer)
 
 	def addUserRepo(self, r, user):
+		response=self.callAPI('https://api.github.com/users/'+user+'/repos')
+		#TODO: keep track of which users we've looked through
+		for uRep in response:
+			r.addRepo(user, uRep['name'])
+
+		#uses pyculr to call API and returns response as a JSON dict
+	def callAPI(self, request):
+		print "calling: " + request
+
 		buffer = BytesIO()
 		c = pycurl.Curl()
-		c.setopt(c.URL, 'https://api.github.com/users/'+user+'/repos')
+		c.setopt(c.USERAGENT,"ebber")
+		c.setopt(c.URL, request)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()
 		c.close()
@@ -120,10 +90,9 @@ class repo:
 			# Body is a byte string.
 			# We have to know the encoding in order to print it to a text file
 			# such as standard output.
-		response= json.loads(body.decode('iso-8859-1'))
-		#TODO: keep track of which users we've looked through
-		for uRep in response:
-			r.addRepo(user, uRep['name'])
+		return json.loads(body.decode('iso-8859-1'))
+
+
 #repo que
 class rQue:
 	r=[]
@@ -156,9 +125,9 @@ G=diGraph()
 que = rQue()
 usersSeen=[]
 
-que.addRepo('pranaygp','birdle')
+que.addRepo('ebber','NTDrone')
 i=0
-while not que.isEmpty():
+while not que.isEmpty() and i<1:
 	try:
 
 		i=i+1
@@ -170,7 +139,7 @@ while not que.isEmpty():
 		r.getStargazers()
 		r.giveStars(G)
 		r.addContRepos(que, usersSeen)
-		#que.printRepos()
+		que.printRepos()
 		print rl[0]+' over'
 	except  Exception,e:
 		break

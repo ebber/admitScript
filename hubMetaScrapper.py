@@ -9,7 +9,7 @@ from io import BytesIO
 
 class repo:
 
-	OAuth="add your own"
+	OAuth=""
 
 	owner=""
 	contributors=[] #stores tuple of [owner,% of stars they get]
@@ -17,6 +17,8 @@ class repo:
 	stargazers=[] #IDs of all the stargazers
 
 	def __init__(self, owner,repo):
+		self.contributors=[]
+		self.stargazers=[]
 		self.owner=owner
 		self.repo=repo
 
@@ -56,24 +58,32 @@ class repo:
 				self.addNode(g,contr[0])
 				g.updateEdge(star,contr[0],contr[1])
 
-	def addContRepos(self,r,seenUser):
+	def addContRepos(self,r,usersSeen):
 		for contr in self.contributors:
-			if contr in seenUser:
+			if contr in usersSeen:
 				pass
-			self.addUserRepo(r,contr[0])
+			self.addUserRepo(r,contr[0],usersSeen)
 
-	def addGazerRepos(self,r):
+	def addGazerRepos(self,r,usersSeen):
 		for gazer in self.stargazers:
-			self.addUserRepo(r,gazer)
+			self.addUserRepo(r,gazer,usersSeen)
 
 	def addUserRepo(self, r, user,usersSeen):
-		if user is not in usersSeen:
+		if not user in usersSeen:
 			response=self.callAPI('https://api.github.com/users/'+user+'/repos')
 			usersSeen.append(user)
 			#TODO: keep track of which users we've looked through
 			for uRep in response:
 				r.addRepo(user, uRep['name'])
+		else:
+			#print "we've seen you before"
+			pass
 
+	def returnStargazers(self):
+		return self.stargazers
+
+	def returnContributers(self):
+		return self.contributors
 
 		#uses pyculr to call API and returns response as a JSON dict
 	def callAPI(self, request):
@@ -81,7 +91,7 @@ class repo:
 
 		buffer = BytesIO()
 		c = pycurl.Curl()
-		c.setopt(c.USERAGENT,"ebber:"+self.OAuth)
+		c.setopt(pycurl.USERPWD,"ebber:"+self.OAuth)
 		c.setopt(c.URL, request)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()
@@ -128,20 +138,32 @@ usersSeen=[]
 
 que.addRepo('ebber','NTDrone')
 i=0
+
 while not que.isEmpty() and i<5:
 	try:
 
 		i=i+1
 		rl=que.getNext()
-		print rl[0]+' ' +rl[1]
+		#print rl[0]+' ' +rl[1]
 		r=repo(rl[0],rl[1])
-		r.fillContributers(usersSeen)
+		r.fillContributers()
+		#print "filled contributors"
 		r.weightContributers()
+		#print "weighted"
 		r.getStargazers()
+		#print "got gazers"
 		r.giveStars(G)
+		#print "stars given"
 		r.addContRepos(que, usersSeen)
+		#print "creps added"
+		r.addGazerRepos(que, usersSeen)
 		#que.printRepos()
-		print rl[0]+' over'
+		print rl[0] +':'+rl[1]+' stars: ' + str(len(r.returnStargazers())) +' among: ' + str(r.returnContributers())
+	except ValueError, e:
+		print e
+		pass
 	except  Exception,e:
+		print e
 		break
+que.printRepos()
 G.draw()

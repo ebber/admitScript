@@ -68,11 +68,14 @@ class repo:
 		for gazer in self.stargazers:
 			self.addUserRepo(r,gazer)
 
-	def addUserRepo(self, r, user):
-		response=self.callAPI('https://api.github.com/users/'+user+'/repos')
-		#TODO: keep track of which users we've looked through
-		for uRep in response:
-			r.addRepo(user, uRep['name'])
+	def addUserRepo(self, r, user,usersSeen):
+		if user is not in usersSeen:
+			response=self.callAPI('https://api.github.com/users/'+user+'/repos')
+			usersSeen.append(user)
+			#TODO: keep track of which users we've looked through
+			for uRep in response:
+				r.addRepo(user, uRep['name'])
+
 
 		#uses pyculr to call API and returns response as a JSON dict
 	def callAPI(self, request):
@@ -80,7 +83,7 @@ class repo:
 
 		buffer = BytesIO()
 		c = pycurl.Curl()
-		c.setopt(c.USERAGENT,"ebber")
+		c.setopt(c.USERAGENT,"ebber:"+self.OAuth)
 		c.setopt(c.URL, request)
 		c.setopt(c.WRITEDATA, buffer)
 		c.perform()
@@ -127,19 +130,19 @@ usersSeen=[]
 
 que.addRepo('ebber','NTDrone')
 i=0
-while not que.isEmpty() and i<1:
+while not que.isEmpty() and i<5:
 	try:
 
 		i=i+1
 		rl=que.getNext()
 		print rl[0]+' ' +rl[1]
 		r=repo(rl[0],rl[1])
-		r.fillContributers()
+		r.fillContributers(usersSeen)
 		r.weightContributers()
 		r.getStargazers()
 		r.giveStars(G)
 		r.addContRepos(que, usersSeen)
-		que.printRepos()
+		#que.printRepos()
 		print rl[0]+' over'
 	except  Exception,e:
 		break

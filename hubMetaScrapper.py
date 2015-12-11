@@ -9,7 +9,7 @@ from io import BytesIO
 
 class repo:
 
-	OAuth=""
+	OAuth="c8cc4f0f4c88a7525102659bd61328d4420c8729"
 
 	owner=""
 	contributors=[] #stores tuple of [owner,% of stars they get]
@@ -56,7 +56,7 @@ class repo:
 			self.addNode(g,star)
 			for contr in self.contributors:
 				self.addNode(g,contr[0])
-				g.updateEdge(star,contr[0],contr[1])
+				g.updateEdge(contr[0],star,contr[1])
 
 	def addContRepos(self,r,usersSeen):
 		for contr in self.contributors:

@@ -9,7 +9,7 @@ from io import BytesIO
 
 class repo:
 
-	OAuth=""
+	OAuth="6a931d6d24e7e4bdc7d77316e03779e23044d64f"
 
 	owner=""
 	contributors=[] #stores tuple of [owner,% of stars they get]
@@ -139,7 +139,7 @@ usersSeen=[]
 que.addRepo('ebber','NTDrone')
 i=0
 
-while not que.isEmpty() and i<5:
+while not que.isEmpty() and i<50:
 	try:
 
 		i=i+1

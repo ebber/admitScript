@@ -1,4 +1,5 @@
 addmissionsScript.py
 githubScrapper.py
 *.pyc
+savedStates/*
 OAuth.tok

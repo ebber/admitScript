@@ -4,8 +4,9 @@ class diGraph:
 	G = nx.DiGraph()
 	nodes=[]
 
-	def __init__(self):
-		pass
+	def __init__(self,path="none"):
+		if path!="none":
+			self.G = nx.read_gpickle(path)
 
 	def addID(self,node):
 		self.G.add_node(node)
@@ -28,6 +29,10 @@ class diGraph:
 				print str(x) +"\n"
 		#for line in nx.generate_multiline_adjlist(self.G):
 		#	print line
+
+	def pickle(self, path):
+		nx.write_gpickle(self.G,path)
+
 
 
 

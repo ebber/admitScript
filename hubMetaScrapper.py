@@ -158,7 +158,8 @@ class rQue:
 
 
 def writeToDisk(graph,usersSeen,que):
-	fName="savedStates/"+str(time.localtime(time.time())[2])+":"+str(time.localtime(time.time())[3])+":"+str(time.localtime(time.time())[4])+"connections"
+	#fName="savedStates/"+str(time.localtime(time.time())[2])+":"+str(time.localtime(time.time())[3])+":"+str(time.localtime(time.time())[4])+"connections"
+	fName="savedStates/connections"
 	graph.pickle(fName+".gpickle")
 	que.writeToDisk(fName+".rQue")
 
@@ -179,6 +180,7 @@ with open("OAuth.tok","r") as f:
 G=diGraph()
 que = rQue()
 usersSeen=[]
+path="none"
 #path="savedStates/21:20:52connections"
 if path!="none":
 	rQue(path+".rQue")
@@ -189,7 +191,8 @@ if path!="none":
 				usersSeen.append(line)
 else:
 	#que.addRepo('mathur','aosp_device_htc_evita')
-	que.addRepo('ebber','NTDrone',OAuth)
+	que.addRepo('ebber','NTDrone')
+
 timeTillRefresh=time.time()
 timeToWrite = time.time()+60*60 #add an hour	
 
@@ -200,6 +203,7 @@ timeToWrite = time.time()+60*60 #add an hour
 #que.addRepo('mathur','aosp_device_htc_evita')
 que.addRepo('ebber','NTDrone')
 i=0
+writeToDisk(G,usersSeen,que)
 while not que.isEmpty():
 	try:
 		if time.time()>=timeToWrite:

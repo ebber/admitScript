@@ -179,7 +179,7 @@ with open("OAuth.tok","r") as f:
 G=diGraph()
 que = rQue()
 usersSeen=[]
-path="savedStates/21:20:52connections"
+#path="savedStates/21:20:52connections"
 if path!="none":
 	rQue(path+".rQue")
 	G=diGraph(path+".gpickle")
@@ -191,6 +191,8 @@ else:
 	#que.addRepo('mathur','aosp_device_htc_evita')
 	que.addRepo('ebber','NTDrone',OAuth)
 timeTillRefresh=time.time()
+timeToWrite = time.time()+60*60 #add an hour	
+
 
 
 
@@ -198,10 +200,12 @@ timeTillRefresh=time.time()
 #que.addRepo('mathur','aosp_device_htc_evita')
 que.addRepo('ebber','NTDrone')
 i=0
-while not que.isEmpty() and i<120:
+while not que.isEmpty():
 	try:
-		if time.time()>=timeTillRefresh:
+		if time.time()>=timeToWrite:
 			writeToDisk(G,usersSeen,que)
+			timeToWrite = time.time()+60*60 #add an hour	
+
 
 		i=i+1
 		rl=que.getNext()
@@ -227,7 +231,7 @@ while not que.isEmpty() and i<120:
 		print "blew the rate"
 		print e
 
-		timeTillRefresh=time.time()+60*60 #add an hour	
+		timeTillRefresh=time.time()+60*10 #add an hour	
 		print time.localtime(timeTillRefresh)
 		writeToDisk(G,usersSeen,que)
 		while(time.time()<=timeTillRefresh): #hang till our limit is refreshed
